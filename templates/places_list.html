@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Objects of Central Asia — Archaeology" %}{% endblock %}
+
+{% block content %}
+<section class="places-hero">
+  <div class="container">
+    <h1 class="places-hero-title">
+      {% trans "Archaeological and historical objects of Central Asia" %}
+    </h1>
+    <p class="places-hero-subtitle">
+      {% trans "Objects are grouped by country and region. Click on a card to see detailed description, photos and coordinates." %}
+    </p>
+
+        <form method="get" action="" class="places-search-bar">
+          <input
+            type="text"
+            name="q"
+            value="{{ query|default:'' }}"
+            placeholder=""
+            class="places-search-bar__input"
+          >
+          <button type="submit" class="places-search-bar__btn">Search</button>
+        </form>
+  </div>
+</section>
+<p></p>
+<div class="container">
+
+  {# --- СТРАНЫ --- #}
+  {% for country in countries %}
+
+    <section class="country-section">
+      <header class="country-header">
+        <h2 class="country-title">{{ country.name }}</h2>
+      </header>
+
+      {# --- РЕГИОНЫ ВНУТРИ СТРАНЫ --- #}
+      {% for region in country.regions.all %}
+        <section class="places-section">
+          <header class="places-section-header">
+            <div>
+              <h3 class="places-section-title">{{ region.name }}</h3>
+              {% if region.description %}
+                <p class="places-section-subtitle">{{ region.description }}</p>
+              {% endif %}
+            </div>
+          </header>
+
+          <div class="places-grid">
+            {% with shown=0 %}
+              {% for p in region.places.all %}
+                {% if not filtered_place_ids or p.id in filtered_place_ids %}
+                  {% with shown=shown|add:"1" %}
+                    <article class="place-card">
+                      <div class="place-card-image-wrap">
+                        {% if p.photo %}
+                          <img src="{{ p.photo.url }}" alt="{{ p.name }}" class="place-card-image">
+                        {% else %}
+                          <div class="place-card-placeholder">🏛</div>
+                        {% endif %}
+                      </div>
+
+                      <div class="place-card-body">
+                        <h4 class="place-card-title">{{ p.name }}</h4>
+                        <p class="place-card-meta">
+                          {% if p.category %}{{ p.category.name }}{% endif %}
+                          {% if p.region %} · {{ p.region.name }}{% endif %}
+                        </p>
+                        {% if p.short_description %}
+                          <p class="place-card-desc">
+                            {{ p.short_description|truncatewords:24 }}
+                          </p>
+                        {% endif %}
+                      </div>
+
+                      <div class="place-card-footer">
+                        <a href="{{ p.get_absolute_url }}" class="btn btn-link">
+                          {% trans "More details" %}
+                        </a>
+                      </div>
+                    </article>
+                  {% endwith %}
+                {% endif %}
+              {% endfor %}
+
+              {% if shown == 0 %}
+                <p class="objects-empty">
+                  {% if query %}
+                    {% trans "No results in this region for your search." %}
+                  {% endif %}
+                </p>
+              {% endif %}
+            {% endwith %}
+          </div>
+        </section>
+      {% endfor %}
+
+    </section>
+  {% endfor %}
+</div>
+{% endblock %}

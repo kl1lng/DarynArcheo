@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}About the project — KazArcheo{% endblock %}
+
+{% block content %}
+<section class="section section-about">
+  <div class="container">
+    <!-- Блок о проекте -->
+    <div class="content-block">
+      <h2 class="content-title">CentralAsiaArcheo — an interactive platform about archaeology in Central Asian countries
+</h2>
+      <p>
+        A project developed by schoolchildren to bring together the cultural heritage of Central Asian countries in one convenient place.
+Our project is an interactive platform for preserving cultural heritage and promoting archaeology among young people, combining information about monuments, artefacts, descriptions of regions and countries, 3D models of artefacts, routes, tours, and a convenient Telegram bot.
+      </p>
+      <p>
+        The project was created by the <strong>TON</strong> team as part of
+        the <strong>FIRST LEGO League Challenge — UNEARTHED™ season</strong>.
+        Our goal is to show that robotics, programming and real-world research
+        can work together: the robot helps to “discover” objects, and the
+        website becomes a place where these discoveries are shared with the
+        world.
+      </p>
+    </div>
+
+    <!-- Цели проекта -->
+    <div class="content-block">
+      <h2 class="content-title">Our goals</h2>
+      <ul class="content-list">
+        <li>Make information about archaeological sites of Central Asia accessible in English for people from different countries.</li>
+        <li>Show how school robotics and research projects can contribute to the study and preservation of cultural heritage.</li>
+        <li>Collect on one map museums, necropolises and important objects from different regions of the country.</li>
+        <li>Publish discoveries and tasks that we solve with the help of our robot during the UNEARTHED™ season.</li>
+      </ul>
+    </div>
+
+    <!-- FIRST LEGO League блок -->
+    <div class="content-block">
+      <h2 class="content-title">FIRST LEGO League: UNEARTHED™</h2>
+      <p>
+        In the UNEARTHED™ season teams explore how the past is uncovered and
+        preserved. We analyse archaeological missions, design and program a
+        robot that performs tasks on the field, and at the same time work on an
+        <strong>Innovation Project</strong> — our website CAArcheo.
+      </p>
+      <p>
+        By combining a physical robot and a digital platform we want to show
+        that archaeology is not only about the past, but also about modern
+        technologies and the future.
+      </p>
+    </div>
+
+    <!-- Команда -->
+    <div class="content-block">
+      <h2 class="content-title">Our team</h2>
+      <p class="section-subtitle" style="margin-bottom: 16px;">
+        TON team members — each responsible for a unique part of the project:
+        from robot design and programming to research, communication and design.
+      </p>
+
+      <!-- Сетка: 4 ряда по 2 карточки -->
+      <div class="team-grid">
+
+        <!-- 1 ряд -->
+        <div class="team-row">
+          <article class="team-card">
+            <img src="{% static 'img/team/adlet.jpeg' %}" alt="Adlet">
+            <h3>Adlet</h3>
+            <p>Programmer</p>
+          </article>
+
+          <article class="team-card">
+            <img src="{% static 'img/team/nurkhan.jpeg' %}" alt="Nurkhan">
+            <h3>Nurkhan</h3>
+            <p>Robot builder</p>
+          </article>
+        </div>
+
+        <!-- 2 ряд -->
+        <div class="team-row">
+          <article class="team-card">
+            <img src="{% static 'img/team/mukhtar.jpeg' %}" alt="Mukhtar">
+            <h3>Mukhtar</h3>
+            <p>Material manager</p>
+          </article>
+
+          <article class="team-card">
+            <img src="{% static 'img/team/khasan.jpeg' %}" alt="Khasan">
+            <h3>Khasan</h3>
+            <p>Programmer</p>
+          </article>
+        </div>
+
+        <!-- 3 ряд -->
+        <div class="team-row">
+          <article class="team-card">
+            <img src="{% static 'img/team/ayanat.jpeg' %}" alt="Ayanat">
+            <h3>Ayanat</h3>
+            <p>Team captain, Project manager</p>
+          </article>
+
+          <article class="team-card">
+            <img src="{% static 'img/team/asem.jpeg' %}" alt="Asem">
+            <h3>Assem</h3>
+            <p>Researcher</p>
+          </article>
+        </div>
+
+        <!-- 4 ряд -->
+        <div class="team-row">
+          <article class="team-card">
+            <img src="{% static 'img/team/sabina.jpeg' %}" alt="Sabina">
+            <h3>Sabina</h3>
+            <p>Communicator, SMM</p>
+          </article>
+
+          <article class="team-card">
+            <img src="{% static 'img/team/tamila.jpeg' %}" alt="Tamila">
+            <h3>Tamila</h3>
+            <p>Creative designer</p>
+          </article>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

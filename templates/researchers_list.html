@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Исследователи — Археология{% endblock %}
+{% block content %}
+<h1>Исследователи</h1>
+<ul class="list">
+{% for r in researchers %}
+<li>
+<strong>{{ r.full_name }}</strong>
+{% if r.affiliation %}<span class="muted"> · {{ r.affiliation }}</span>{% endif %}
+{% if r.bio %}<div class="muted" style="margin-top:4px">{{ r.bio|linebreaks }}</div>{% endif %}
+</li>
+{% empty %}
+<li>Пока нет данных.</li>
+{% endfor %}
+</ul>
+{% endblock %}

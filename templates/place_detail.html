@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ place.name }} — RoboAIS Archaeology{% endblock %}
+
+{% block content %}
+<section class="place-detail">
+  <div class="container place-detail-inner">
+    <article class="place-detail-main">
+      <p class="place-detail-kicker">
+        {% if place.region %}{{ place.region.name }}{% endif %}
+        {% if place.category %} · {{ place.category.name }}{% endif %}
+      </p>
+      <h1 class="place-detail-title">{{ place.name }}</h1>
+
+      {% if place.photo %}
+        <div class="place-detail-image-wrap">
+          <img src="{{ place.photo.url }}" alt="{{ place.name }}" class="place-detail-image">
+        </div>
+      {% endif %}
+
+      {% if place.short_description %}
+        <p class="place-detail-lead">
+          {{ place.short_description }}
+        </p>
+      {% endif %}
+
+      {% if place.long_description %}
+        <div class="place-detail-text richtext">
+          {{ place.long_description|linebreaks }}
+        </div>
+      {% endif %}
+    </article>
+
+    <aside class="place-detail-sidebar">
+      <div class="place-detail-card">
+        <h2 class="place-detail-card-title">{% trans "Object info" %}</h2>
+        <dl class="place-detail-meta">
+          {% if place.region %}
+            <div>
+              <dt>{% trans "Region" %}</dt>
+              <dd>{{ place.region.name }}</dd>
+            </div>
+          {% endif %}
+          {% if place.category %}
+            <div>
+              <dt>{% trans "Type" %}</dt>
+              <dd>{{ place.category.name }}</dd>
+            </div>
+          {% endif %}
+          {% if place.latitude and place.longitude %}
+            <div>
+              <dt>{% trans "Coordinates" %}</dt>
+              <dd>{{ place.latitude }}, {{ place.longitude }}</dd>
+            </div>
+          {% endif %}
+        </dl>
+        <a href="{% url 'map' %}" class="btn place-detail-map-btn">
+          {% trans "Show on the excavation map" %}
+        </a>
+      </div>
+        {% if place.tour_url %}
+          <div class="place-detail-tour">
+            <a href="{{ place.tour_url }}"
+               target="_blank"
+               rel="noopener"
+               class="btn place-detail-tour-btn">
+              {% trans "Explore the tour" %}
+            </a>
+          </div>
+        {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}

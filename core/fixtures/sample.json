@@ -1,0 +1,13 @@
+[
+{ "model": "core.site", "pk": 1, "fields": { "name": "The Kumai archaeological complex", "description": "Стоянка бронзового века.", "latitude": 51.431, "longitude": 72.403}},
+{ "model": "core.site", "pk": 2, "fields": { "name": "Chaika Burial Ground", "description": "In 1975-1976 on the necropolis near settlement Zaozernoe belonging to the population of Chaika Settlement, was found ground cemetery. There were discovered 46 graves with single burial according to the Muslim ritual in plain pits.", "latitude": 52.194, "longitude": 68.373 }},
+{ "model": "core.site", "pk": 3, "fields": { "name": "Mausoleum from the Golden Horde era", "description": "Remains of a mausoleum dating back to the Golden Horde in the 15th century were discovered on the territory of the Korgalzhyn district in the Akmola Region a centrally located region of Kazakhstan, reported Khabar 24 news agency.", "latitude": 50.652604, "longitude": 70.330568 }},
+{ "model": "core.site", "pk": 4, "fields": { "name": "National Museum of Kazakhstan in Astana.", "description": "The National Museum of the Republic of Kazakhstan (Kazakh: Қазақстан Республикасының Ұлттық музейі, Qazaqstan Respýblıkasynyń Ulltyq mýzeıi), is located in Astana. When it was built in 2014, it was the largest museum in Central Asia. Made up of blue glass and white marble depicts Kazakhstan's history and culture from prehistoric times to the present.", "latitude": 51.130, "longitude": 71.437 }},
+
+{ "model": "core.researcher", "pk": 1, "fields": { "full_name": "Иван Петров", "affiliation": "АРХ Институт", "bio": "Специалист по бронзовому веку." }},
+{ "model": "core.researcher", "pk": 2, "fields": { "full_name": "Айжан Садыкова", "affiliation": "Университет Актобе", "bio": "Исследует средневековые ремесла." }},
+
+
+{ "model": "core.artifact", "pk": 1, "fields": { "title": "Кремнёвый нож", "description": "Небольшой нож из кремня.", "period": "stone_age", "photo": null, "site": 1, "discovered_at": "2024-06-12", "researcher": 1 }},
+{ "model": "core.artifact", "pk": 2, "fields": { "title": "Керамический сосуд", "description": "Орнаментированная керамика.", "period": "medieval", "photo": null, "site": 2, "discovered_at": "2023-09-01", "researcher": 2 }}
+]

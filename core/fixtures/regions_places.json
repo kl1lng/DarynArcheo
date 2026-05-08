@@ -1,0 +1,225 @@
+[
+  {
+    "model": "core.region",
+    "pk": 1,
+    "fields": {
+      "name": "Akmola Region",
+      "slug": "akmola",
+      "description": "Region around Astana with important archaeological complexes, burial grounds and national museums.",
+      "order": 1
+    }
+  },
+  {
+    "model": "core.region",
+    "pk": 2,
+    "fields": {
+      "name": "Abai Region",
+      "slug": "abai",
+      "description": "Spiritual heart of Kazakhstan, homeland of Abai Kunanbayev with sacred caves, petroglyphs and museums.",
+      "order": 2
+    }
+  },
+  {
+    "model": "core.region",
+    "pk": 3,
+    "fields": {
+      "name": "Aktobe Region",
+      "slug": "aktobe",
+      "description": "Historic western region with large necropolises, memorial complexes of batyrs and rich museum collections.",
+      "order": 3
+    }
+  },
+  {
+    "model": "core.region",
+    "pk": 4,
+    "fields": {
+      "name": "Almaty Region",
+      "slug": "almaty",
+      "description": "Picturesque southeastern region with Saka kurgans, Silk Road cities and large petroglyph complexes.",
+      "order": 4
+    }
+  },
+  {
+    "model": "core.region",
+    "pk": 5,
+    "fields": {
+      "name": "Karaganda Region",
+      "slug": "karaganda",
+      "description": "Central Kazakhstan (Sary-Arka) with Bronze Age necropolises, museums and sites of 20th-century history.",
+      "order": 5
+    }
+  },
+  {
+    "model": "core.region",
+    "pk": 6,
+    "fields": {
+      "name": "Turkestan Region",
+      "slug": "turkestan",
+      "description": "Historic south of Kazakhstan with medieval cities and mausoleums on the Silk Road.",
+      "order": 6
+    }
+  },
+
+  {
+    "model": "core.placecategory",
+    "pk": 1,
+    "fields": { "name": "Necropolis", "slug": "necropolis" }
+  },
+  {
+    "model": "core.placecategory",
+    "pk": 2,
+    "fields": { "name": "Mausoleum", "slug": "mausoleum" }
+  },
+  {
+    "model": "core.placecategory",
+    "pk": 3,
+    "fields": { "name": "Memorial complex", "slug": "memorial-complex" }
+  },
+  {
+    "model": "core.placecategory",
+    "pk": 4,
+    "fields": { "name": "Museum", "slug": "museum" }
+  },
+  {
+    "model": "core.placecategory",
+    "pk": 5,
+    "fields": { "name": "Petroglyphs", "slug": "petroglyphs" }
+  },
+  {
+    "model": "core.placecategory",
+    "pk": 6,
+    "fields": { "name": "Cave / sacred natural site", "slug": "cave" }
+  },
+  {
+    "model": "core.placecategory",
+    "pk": 7,
+    "fields": { "name": "Burial ground / kurgan field", "slug": "burial-ground" }
+  },
+  {
+    "model": "core.placecategory",
+    "pk": 8,
+    "fields": { "name": "Archaeological park / settlement", "slug": "archaeological-park" }
+  },
+
+  {
+    "model": "core.place",
+    "pk": 1,
+    "fields": {
+      "name": "Kumai Archaeological Complex",
+      "slug": "kumai-archaeological-complex",
+      "region": 1,
+      "category": 8,
+      "short_description": "Landscape-archaeological complex in Ereymentau district with stone sculptures and monuments from the Turkic period.",
+      "long_description": "The Kumai Archaeological Complex is located about 120 km from Astana on the banks of the Kumai River. It includes stone sculptures (balbals) from the Western Turkic Khaganate period and monuments from the Bronze and Early Iron Ages, important for ethno-cultural and eco-tourism.",
+      "latitude": null,
+      "longitude": null,
+      "photo": "sites/akmola/kumai-archaeological-complex.jpg",
+      "is_featured": true
+    }
+  },
+  {
+    "model": "core.place",
+    "pk": 2,
+    "fields": {
+      "name": "Abat-Baytak Necropolis",
+      "slug": "abat-baytak-necropolis",
+      "region": 3,
+      "category": 1,
+      "short_description": "Large necropolis with the unique Abat-Baytak Mausoleum from the 14th–15th centuries.",
+      "long_description": "Located in the Khobda district, Abat-Baytak is a vast burial complex dating from the 14th to early 20th centuries. Its centerpiece is the Abat-Baytak Mausoleum, a distinctive example of medieval steppe architecture, surrounded by hundreds of graves and kulpytas tombstones.",
+      "latitude": null,
+      "longitude": null,
+      "photo": "sites/aktobe/abat-baytak-necropolis.jpg",
+      "is_featured": true
+    }
+  },
+  {
+    "model": "core.place",
+    "pk": 3,
+    "fields": {
+      "name": "Issyk Kurgan",
+      "slug": "issyk-kurgan",
+      "region": 4,
+      "category": 7,
+      "short_description": "Saka burial mound near Esik, where the famous \"Golden Man\" was discovered.",
+      "long_description": "Issyk (Esik) Kurgan is a key Saka monument of the 6th–4th centuries BCE. An unlooted tomb yielded the remains of a warrior or ruler in a golden outfit, over 4,000 gold ornaments and a silver bowl with the Issyk inscription, one of the earliest scripts of Central Asia.",
+      "latitude": null,
+      "longitude": null,
+      "photo": "sites/almaty/issyk-kurgan.jpg",
+      "is_featured": true
+    }
+  },
+  {
+    "model": "core.place",
+    "pk": 4,
+    "fields": {
+      "name": "Begazy-Dandybay Necropolis",
+      "slug": "begazy-dandybay-necropolis",
+      "region": 5,
+      "category": 1,
+      "short_description": "Late Bronze Age necropolis with unique megalithic mausoleums of the steppe elite.",
+      "long_description": "Begazy-Dandybay in Central Kazakhstan is the type-site of the Begazy-Dandybay culture. Its monumental granite mausoleums, rich burials and nearby settlements show a society with advanced metallurgy, agriculture and mining and mark the emergence of early statehood in the steppe.",
+      "latitude": null,
+      "longitude": null,
+      "photo": "sites/karaganda/begazy-dandybay-necropolis.jpg",
+      "is_featured": true
+    }
+  },
+  {
+    "model": "core.place",
+    "pk": 5,
+    "fields": {
+      "name": "Mausoleum of Khoja Ahmed Yasawi",
+      "slug": "mausoleum-khoja-ahmed-yasawi",
+      "region": 6,
+      "category": 2,
+      "short_description": "UNESCO-listed mausoleum of the Sufi poet Khoja Ahmed Yasawi in Turkestan.",
+      "long_description": "The monumental mausoleum built in the late 14th century by order of Timur is one of the main Islamic and architectural monuments of Kazakhstan and Central Asia. It is a major pilgrimage site and symbol of Turkestan as a spiritual center.",
+      "latitude": null,
+      "longitude": null,
+      "photo": "sites/turkestan/mausoleum-khoja-ahmed-yasawi.jpg",
+      "is_featured": true
+    }
+  },
+
+  {
+    "model": "core.teammember",
+    "pk": 1,
+    "fields": { "name": "Adlet", "role": "Programmer", "order": 1 }
+  },
+  {
+    "model": "core.teammember",
+    "pk": 2,
+    "fields": { "name": "Nurkhan", "role": "Builder", "order": 2 }
+  },
+  {
+    "model": "core.teammember",
+    "pk": 3,
+    "fields": { "name": "Daniyal", "role": "Mission strategist", "order": 3 }
+  },
+  {
+    "model": "core.teammember",
+    "pk": 4,
+    "fields": { "name": "Asem", "role": "Researcher", "order": 4 }
+  },
+  {
+    "model": "core.teammember",
+    "pk": 5,
+    "fields": { "name": "Ayanat", "role": "Project manager", "order": 5 }
+  },
+  {
+    "model": "core.teammember",
+    "pk": 6,
+    "fields": { "name": "Tamila", "role": "Communicator", "order": 6 }
+  },
+  {
+    "model": "core.teammember",
+    "pk": 7,
+    "fields": { "name": "Sabina", "role": "Captain", "order": 7 }
+  },
+  {
+    "model": "core.teammember",
+    "pk": 8,
+    "fields": { "name": "Abylay", "role": "Creative designer", "order": 8 }
+  }
+]

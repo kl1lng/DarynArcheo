@@ -1,0 +1,135 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}{% trans "Archeology — an online platform" %}{% endblock %}</title>
+
+  <link rel="icon" type="image/png" href="{% static 'img/logo-arch.png' %}">
+  <link rel="shortcut icon" type="image/png" href="{% static 'img/logo-arch.png' %}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="page">
+<header class="topbar">
+  <div class="topbar-inner container">
+
+    <a href="{% url 'index' %}" class="brand">
+      <span class="brand-mark">
+        <img src="{% static 'img/logo-arch.png' %}" alt="Logo">
+      </span>
+      <span class="brand-text">
+        <span class="brand-title">CAArcheo</span>
+       <!-- <span class="brand-subtitle">Archaeology</span> -->
+      </span>
+    </a>
+
+    <!-- Бургер — виден ТОЛЬКО на телефонах -->
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <nav class="main-nav" id="mainNav">
+      <a href="{% url 'index' %}" class="nav-link">Home</a>
+      <a href="{% url 'places_list' %}" class="nav-link">Places</a>
+      <a href="{% url 'artifacts_list' %}" class="nav-link">Artifacts</a>
+      <a href="{% url 'map' %}" class="nav-link">Map</a>
+      <a href="/about/" class="nav-link">About Us</a>
+    </nav>
+
+    <div class="topbar-actions" id="topbarActions">
+      <a href="{% url 'admin:index' %}" class="btn btn-ghost">Login</a>
+      <a href="#" class="btn btn-dark">Registration</a>
+    </div>
+
+  </div>
+</header>
+
+
+
+<main class="page-main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="page-footer">
+  <div class="container footer-inner">
+    <span>© 2025 Archaeology by TON.</span>
+  </div>
+</footer>
+
+{# Плавающая кнопка #}
+<div class="chat-launcher" id="chat-launcher">
+  💬 Ask a question
+</div>
+
+{# Модальное окно #}
+<div class="chat-modal" id="chat-modal">
+  <div class="chat-modal__window">
+    <button class="chat-modal__close" id="chat-close">×</button>
+    <h3>Chat with the CentralAsiaArcheo bot</h3>
+    <p class="chat-subtitle">
+      The bot works in Telegram. Click the button below or scan the QR code to open the chat.
+    </p>
+
+    <div class="chat-qr-wrapper">
+      <img src="{% static 'img/qrchat.png' %}" alt="QR-код бота UnearthedKZ"
+           class="chat-qr">
+    </div>
+
+    <a href="https://t.me/CentralAsiaArcheoRU_bot"
+       target="_blank"
+       rel="noopener"
+       class="tg-btn tg-btn-full">
+      Open the bot in Telegram
+    </a>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const launcher = document.getElementById('chat-launcher');
+    const modal = document.getElementById('chat-modal');
+    const closeBtn = document.getElementById('chat-close');
+
+    if (launcher && modal && closeBtn) {
+      launcher.addEventListener('click', function () {
+        modal.classList.add('chat-modal--open');
+      });
+
+      closeBtn.addEventListener('click', function () {
+        modal.classList.remove('chat-modal--open');
+      });
+
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          modal.classList.remove('chat-modal--open');
+        }
+      });
+    }
+  })();
+</script>
+<script>
+  const mobileToggle = document.getElementById("mobileToggle");
+  const mainNav = document.getElementById("mainNav");
+  const topbarActions = document.getElementById("topbarActions");
+
+  mobileToggle.addEventListener("click", () => {
+    mobileToggle.classList.toggle("open");
+    mainNav.classList.toggle("open");
+    topbarActions.classList.toggle("open");
+  });
+</script>
+
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

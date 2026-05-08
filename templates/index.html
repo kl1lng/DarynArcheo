@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}CentralAsiaArcheo Archaeology{% endblock %}
+
+{% block content %}
+
+<section class="hero-arch">
+  <div class="container">
+    <div class="hero-arch-inner">
+
+      <div class="hero-arch-main">
+        <p class="hero-arch-kicker">{% trans "Digital atlas of archaeology" %}</p>
+        <h1 class="hero-arch-title">
+          {% trans "Online platform on archeology: projects, finds, knowledge" %}
+        </h1>
+        <p class="hero-arch-subtitle">
+          {% trans "Explore excavation sites, browse collections, and read field reports and articles." %}
+        </p>
+
+        <!-- SEARCH FORM -->
+        <form class="hero-arch-search" action="" method="get">
+          <input type="text"
+                 name="q"
+                 value="{{ query }}"
+                 class="hero-arch-search-input"
+                 placeholder="{% trans 'Search: Issyk Golden Man' %}">
+          <button type="submit" class="btn hero-arch-search-btn">
+            {% trans "Search" %}
+          </button>
+        </form>
+
+      </div>
+
+      <!-- SIDE PANEL -->
+      <aside class="hero-arch-panel">
+        <p class="hero-arch-panel-title">{% trans "Project panel" %}</p>
+        <p class="hero-arch-panel-text">
+          {% trans "Open the interactive excavation map to explore routes, sites and finds on the territory of Kazakhstan." %}
+        </p>
+        <a href="{% url 'map' %}" class="btn hero-arch-panel-btn">
+          {% trans "Open the excavation map" %}
+        </a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+
+<!-- SEARCH RESULTS BLOCK -->
+{% if query %}
+<section class="objects-section">
+  <div class="container">
+
+    <header class="objects-header">
+      <div>
+        <h2 class="objects-title">
+          {% blocktrans %}Search results for “{{ query }}”{% endblocktrans %}
+        </h2>
+        <p class="objects-subtitle">
+          {% trans "Artifacts and places that match your query." %}
+        </p>
+      </div>
+    </header>
+
+    <!-- ARTIFACT RESULTS -->
+    {% if search_artifacts %}
+      <h3 class="objects-subtitle">{% trans "Artifacts" %}</h3>
+      <div class="objects-grid">
+        {% for a in search_artifacts %}
+          <article class="object-card">
+            <div class="object-card-image-wrap">
+              {% if a.photo %}
+                <img src="{{ a.photo.url }}" alt="{{ a.title }}" class="object-card-image">
+              {% else %}
+                <div class="object-card-placeholder"><span></span></div>
+              {% endif %}
+            </div>
+            <div class="object-card-body">
+              <h3 class="object-card-title">{{ a.title }}</h3>
+              {% if a.site %}
+                <p class="object-card-meta">
+                  {% trans "Site" %}: {{ a.site.name }}
+                </p>
+              {% endif %}
+              <p class="object-card-desc">{{ a.description|truncatewords:25 }}</p>
+            </div>
+            <div class="object-card-footer">
+              <a href="{{ a.get_absolute_url }}" class="btn btn-link">{% trans "More details" %}</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+
+    <!-- PLACE RESULTS -->
+    {% if search_places %}
+      <h3 class="objects-subtitle">{% trans "Places" %}</h3>
+      <div class="objects-grid">
+        {% for p in search_places %}
+          <article class="object-card">
+            <div class="object-card-image-wrap">
+              {% if p.photo %}
+                <img src="{{ p.photo.url }}" alt="{{ p.name }}" class="object-card-image">
+              {% else %}
+                <div class="object-card-placeholder"><span></span></div>
+              {% endif %}
+            </div>
+            <div class="object-card-body">
+              <h3 class="object-card-title">{{ p.name }}</h3>
+              {% if p.region %}
+                <p class="object-card-meta">
+                  {{ p.region.name }}
+                </p>
+              {% endif %}
+              <p class="object-card-desc">{{ p.short_description|default:p.long_description|truncatewords:25 }}</p>
+            </div>
+            <div class="object-card-footer">
+              <a href="{{ p.get_absolute_url }}" class="btn btn-link">{% trans "More details" %}</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if not search_artifacts and not search_places %}
+      <p class="objects-empty">
+        {% trans "No results found." %}
+      </p>
+    {% endif %}
+
+  </div>
+</section>
+{% endif %}
+
+
+
+<!-- ORIGINAL BLOCK WITH FEATURED OBJECTS -->
+<section class="objects-section">
+  <div class="container">
+    <header class="objects-header">
+      <div>
+        <h2 class="objects-title">{% trans "Selected objects of Kazakhstan" %}</h2>
+        <p class="objects-subtitle">
+          {% trans "Key necropolises, mausoleums and archaeological parks." %}
+        </p>
+      </div>
+      <a href="{% url 'places_list' %}" class="btn objects-all-btn">
+        {% trans "All objects" %}
+      </a>
+    </header>
+
+    {% if latest_artifacts %}
+      <div class="objects-grid">
+        {% for a in latest_artifacts %}
+          <article class="object-card">
+            <div class="object-card-image-wrap">
+              {% if a.photo %}
+                <img src="{{ a.photo.url }}" alt="{{ a.title }}" class="object-card-image">
+              {% elif a.site and a.site.photo %}
+                <img src="{{ a.site.photo.url }}" alt="{{ a.place.name }}" class="object-card-image">
+              {% else %}
+                <div class="object-card-placeholder"><span></span></div>
+              {% endif %}
+            </div>
+            <div class="object-card-body">
+              <h3 class="object-card-title">{{ a.title }}</h3>
+
+              {% if a.place %}
+                <p class="object-card-meta">{% trans "Place" %}: {{ a.place.name }}</p>
+              {% endif %}
+
+              {% if a.period %}
+                <p class="object-card-meta">{% trans "Period" %}: {{ a.get_period_display }}</p>
+              {% endif %}
+
+              <p class="object-card-desc">{{ a.description|truncatewords:26 }}</p>
+            </div>
+
+            <div class="object-card-footer">
+              <a href="{{ a.get_absolute_url }}" class="btn btn-link">
+                {% trans "More details" %}
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="objects-empty">
+        {% trans "There are no objects yet. Check the fixture or add them through the admin panel." %}
+      </p>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

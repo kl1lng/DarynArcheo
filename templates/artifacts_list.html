@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Artifacts — KazArcheo{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title">{% trans "Artifacts" %}</h2>
+      <p class="section-subtitle">
+        {% trans "Museum objects and archaeological finds connected with key places of Kazakhstan." %}
+      </p>
+    </div>
+  </div>
+
+  {% if artifacts %}
+    <div class="cards-row">
+      {% for a in artifacts %}
+        <article class="excavation-card">
+          {% if a.photo %}
+            <div class="excavation-card-image">
+              <img src="{{ a.photo.url }}" alt="{{ a.title }}">
+            </div>
+          {% endif %}
+
+          <div class="excavation-card-body">
+            <div class="excavation-card-top">
+              {# сначала пытаемся взять Place, если он есть #}
+              {% if a.place %}
+                <span class="badge">{{ a.place.name }}</span>
+              {% elif a.site %}
+                <span class="badge">{{ a.site.name }}</span>
+              {% endif %}
+
+              {% if a.period %}
+                <span class="badge">
+                  {{ a.get_period_display }}
+                </span>
+              {% endif %}
+            </div>
+
+            <h3 class="excavation-card-title">
+              {{ a.title }}
+            </h3>
+
+            {% if a.description %}
+              <p class="excavation-card-meta">
+                {{ a.description|truncatewords:30 }}
+              </p>
+            {% endif %}
+
+            <div class="excavation-card-footer">
+              <a href="{{ a.get_absolute_url }}" class="btn btn-link">
+                {% trans "More details" %}
+              </a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="section-subtitle">
+      {% trans "There are no artifacts for this period yet." %}
+    </p>
+  {% endif %}
+</section>
+{% endblock %}

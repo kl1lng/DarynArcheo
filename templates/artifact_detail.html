@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{{ artifact.title }} — KazArcheo{% endblock %}
+
+{% block content %}
+<section class="section section-artifact-detail">
+  <div class="container">
+
+    <!-- Хлебные крошки / назад к списку -->
+    <nav class="breadcrumb">
+      <a href="{% url 'artifacts_list' %}" class="breadcrumb-link">
+        ← {% trans "Back to all artifacts" %}
+      </a>
+    </nav>
+
+    <article class="artifact-detail-card">
+
+      <!-- Заголовок и мета-инфо -->
+      <header class="artifact-detail-header">
+        <h1 class="artifact-detail-title">
+          {{ artifact.title }}
+        </h1>
+
+        <div class="artifact-detail-meta">
+          {% if artifact.site %}
+            <span class="badge badge-soft">
+              {% trans "Place" %}: {{ artifact.site.name }}
+            </span>
+          {% endif %}
+
+          {% if artifact.period %}
+            <span class="artifact-detail-meta-item">
+              {{ artifact.get_period_display }}
+            </span>
+          {% endif %}
+
+          {% if artifact.researcher %}
+            <span class="artifact-detail-meta-item">
+              {% trans "Researcher" %}: {{ artifact.researcher }}
+            </span>
+          {% endif %}
+        </div>
+      </header>
+
+      <!-- Фото артефакта -->
+      {% if artifact.photo %}
+        <figure class="artifact-detail-media">
+          <img src="{{ artifact.photo.url }}" alt="{{ artifact.title }}">
+        </figure>
+      {% endif %}
+{% if artifact.model_3d %}
+  <h3>3D Model</h3>
+
+  <script type="module"
+    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <model-viewer
+    src="{{ artifact.model_3d.url }}"
+    alt="{{ artifact.title }}"
+    auto-rotate
+    camera-controls
+    style="width:100%; height:520px; background:#f3f3f3; border-radius:16px;">
+  </model-viewer>
+{% endif %}
+
+      <!-- Описание -->
+      {% if artifact.description %}
+        <div class="artifact-detail-body">
+          <p>
+            {{ artifact.description|linebreaksbr }}
+          </p>
+        </div>
+      {% endif %}
+
+    </article>
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,783 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Excavation map — RoboAIS Archaeology" %}{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+  <style>
+    .map-section {
+      padding: 24px 0 40px;
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      margin-bottom: 14px;
+    }
+
+    .map-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .map-subtitle {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #7a6d5b;
+      max-width: 640px;
+    }
+
+    .map-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.9fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    #map {
+      width: 100%;
+      min-height: 480px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.10);
+      border: 1px solid #efe1c8;
+    }
+
+    .map-sidebar {
+      background: #fffdf6;
+      border-radius: 20px;
+      border: 1px solid #efe1c8;
+      box-shadow: 0 16px 35px rgba(0,0,0,0.06);
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .map-sidebar h2 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .map-group {
+      margin-bottom: 2px;
+    }
+
+    .map-mode-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+
+    .map-select,
+    .map-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid #e0d2b8;
+      padding: 6px 10px;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    .map-legend {
+      margin-top: 4px;
+      border-top: 1px dashed rgba(0,0,0,0.08);
+      padding-top: 8px;
+      font-size: 12px;
+      color: #7a6d5b;
+    }
+
+    .map-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.place    { background: #2f6ac2; }
+    .legend-dot.artifact { background: #c25c2f; }
+    .legend-dot.route    { background: #228b57; }
+    .legend-dot.osrm     { background: #0066ff; }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px;
+    }
+
+    .popup-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+      font-size: 14px;
+    }
+
+    .popup-meta {
+      font-size: 12px;
+      color: #7a6d5b;
+      margin-bottom: 4px;
+    }
+
+    .popup-link {
+      font-size: 12px;
+      text-decoration: none;
+      color: #3a240f;
+      font-weight: 500;
+    }
+
+    .btn-route {
+      margin-top: 6px;
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #3a240f;
+      color: #fff;
+    }
+
+    .btn-route:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .routing-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .routing-row select {
+      flex: 1;
+    }
+
+    .routing-hint {
+      font-size: 11px;
+      color: #8a7b66;
+      margin-top: -3px;
+    }
+
+    /* Карточка Route info */
+    .route-info-card {
+      margin-top: 8px;
+      border-radius: 14px;
+      border: 1px solid #e0d2b8;
+      background: #fffaf0;
+      padding: 8px 10px;
+      font-size: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .route-info-header {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #3a240f;
+    }
+
+    .route-info-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .route-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .route-label {
+      color: #8a7b66;
+    }
+
+    .route-value {
+      font-weight: 600;
+      color: #3a240f;
+    }
+
+    .route-info-mode {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #8a7b66;
+    }
+
+    @media (max-width: 900px) {
+      .map-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      #map {
+        min-height: 380px;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<section class="map-section">
+  <div class="container">
+    <header class="map-header">
+      <div>
+        <h1 class="map-title">
+          {% trans "Excavation map of Kazakhstan" %}
+        </h1>
+        <p class="map-subtitle">
+          {% trans "Interactive map with archaeological sites, monuments and finds. Choose a map mode or build a route between two points." %}
+        </p>
+      </div>
+    </header>
+
+    <div class="map-layout">
+      <div id="map"></div>
+
+      <aside class="map-sidebar">
+        <div class="map-group">
+          <h2>{% trans "Map mode" %}</h2>
+          <div class="map-mode-group">
+            <label>
+              <input type="radio" name="map-mode" value="standard" checked>
+              <span>{% trans "Standard (places + artifacts)" %}</span>
+            </label>
+            <label>
+              <input type="radio" name="map-mode" value="archaeological">
+              <span>{% trans "Archaeological route (auto)" %}</span>
+            </label>
+            <label>
+              <input type="radio" name="map-mode" value="driving">
+              <span>{% trans "Driving route (roads)" %}</span>
+            </label>
+            <label>
+              <input type="radio" name="map-mode" value="walking">
+              <span>{% trans "Walking route (trail)" %}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="map-group" id="routing-panel" style="display: none;">
+          <h2>{% trans "Routing" %}</h2>
+          <div class="routing-row">
+            <select id="route-from" class="map-select">
+              <option value="">{% trans "From place…" %}</option>
+            </select>
+          </div>
+          <div class="routing-row">
+            <select id="route-to" class="map-select">
+              <option value="">{% trans "To place…" %}</option>
+            </select>
+          </div>
+          <p class="routing-hint">
+            {% trans "Select two archaeological places and build a route between them." %}
+          </p>
+          <button id="build-route-btn" class="btn-route" disabled>
+            {% trans "Build route" %}
+          </button>
+
+          <div id="route-info-card" class="route-info-card" style="display:none;">
+            <div class="route-info-header">
+              {% trans "Route info" %}
+            </div>
+            <div class="route-info-body">
+              <div class="route-info-row">
+                <span class="route-label">{% trans "Distance" %}</span>
+                <span class="route-value" id="route-distance">–</span>
+              </div>
+              <div class="route-info-row">
+                <span class="route-label">{% trans "Time" %}</span>
+                <span class="route-value" id="route-time">–</span>
+              </div>
+              <div class="route-info-mode" id="route-mode-label"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-group">
+          <h2>{% trans "Quick search" %}</h2>
+          <input id="map-search-input" class="map-input" type="text"
+                 placeholder="{% trans 'Start typing site or artifact name…' %}">
+        </div>
+
+        <div class="map-legend">
+          <div class="map-legend-row">
+            <span class="legend-dot place"></span>
+            <span>{% trans "Places (sites, complexes)" %}</span>
+          </div>
+          <div class="map-legend-row">
+            <span class="legend-dot artifact"></span>
+            <span>{% trans "Artifacts" %}</span>
+          </div>
+          <div class="map-legend-row">
+            <span class="legend-dot route"></span>
+            <span>{% trans "Archaeological routes (auto)" %}</span>
+          </div>
+          <div class="map-legend-row">
+            <span class="legend-dot osrm"></span>
+            <span>{% trans "Driving / walking route (OSRM)" %}</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+
+  <script>
+    // --- Базовые слои ---
+    const streetLayer = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
+      }
+    );
+
+    const satelliteLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}",
+      {
+        maxZoom: 19,
+        attribution: "Tiles &copy; Esri"
+      }
+    );
+
+    const map = L.map("map", {
+      center: [47.5, 67.5],
+      zoom: 5,
+      layers: [streetLayer]
+    });
+
+    L.control.layers(
+      {
+        "OSM": streetLayer,
+        "Satellite": satelliteLayer
+      },
+      null,
+      { position: "topleft" }
+    ).addTo(map);
+
+    // --- Глобальные слои ---
+    let placesLayer = L.geoJSON(null);
+    let artifactsLayer = L.geoJSON(null);
+    let routesLayer = null;       // археологический маршрут из /api/routes/
+    let routeOsrmLayer = null;    // маршрут OSRM (driving / walking)
+
+    let artifactsData = null;
+    let placesData = null;
+    let placesForRouting = [];    // [{index, name, lon, lat}, ...]
+
+    const searchInput    = document.getElementById("map-search-input");
+    const routingPanel   = document.getElementById("routing-panel");
+    const fromSelect     = document.getElementById("route-from");
+    const toSelect       = document.getElementById("route-to");
+    const buildRouteBtn  = document.getElementById("build-route-btn");
+
+    const routeInfoCard   = document.getElementById("route-info-card");
+    const routeDistanceEl = document.getElementById("route-distance");
+    const routeTimeEl     = document.getElementById("route-time");
+    const routeModeLabel  = document.getElementById("route-mode-label");
+
+    const modeRadios = document.querySelectorAll('input[name="map-mode"]');
+    let currentMode = "standard";
+
+    modeRadios.forEach((radio) => {
+      if (radio.checked) {
+        currentMode = radio.value;
+      }
+      radio.addEventListener("change", (e) => {
+        currentMode = e.target.value;
+        applyMapMode();
+      });
+    });
+
+    // --- Загрузка places ---
+    fetch("{% url 'places_geojson' %}")
+      .then((r) => r.json())
+      .then((data) => {
+        placesData = data;
+
+        placesLayer = L.geoJSON(data, {
+          onEachFeature: (feature, layer) => {
+            const props  = feature.properties || {};
+            const title  = props.title || props.name || "Place";
+            const region = props.region || "";
+            const type   = props.type || "";
+            const url    = props.url || "#";
+
+            const html = `
+              <div class="popup">
+                <div class="popup-title">${title}</div>
+                <div class="popup-meta">
+                  ${region ? region + " · " : ""}${type}
+                </div>
+                <a class="popup-link" href="${url}">{% trans "Open object page" %}</a>
+              </div>
+            `;
+            layer.bindPopup(html);
+          }
+        }).addTo(map);
+
+        populateRoutingPlaces(data);
+        fitToAllBounds();
+      })
+      .catch((err) => console.error("places.geojson error", err));
+
+    // --- Загрузка artifacts ---
+    fetch("{% url 'artifacts_geojson' %}")
+      .then((r) => r.json())
+      .then((data) => {
+        artifactsData = data;
+
+        artifactsLayer = L.geoJSON(data, {
+          onEachFeature: (feature, layer) => {
+            const props  = feature.properties || {};
+            const title  = props.title || "Artifact";
+            const site   = props.site  || "";
+            const url    = props.url || "#";
+
+            const html = `
+              <div class="popup">
+                <div class="popup-title">${title}</div>
+                <div class="popup-meta">
+                  ${site}
+                </div>
+                <a class="popup-link" href="${url}">{% trans "Open artifact page" %}</a>
+              </div>
+            `;
+            layer.bindPopup(html);
+          },
+          pointToLayer: (feature, latlng) => {
+            return L.circleMarker(latlng, {
+              radius: 6,
+              color: "#c25c2f",
+              fillColor: "#c25c2f",
+              fillOpacity: 0.9,
+              weight: 1
+            });
+          }
+        }).addTo(map);
+
+        fitToAllBounds();
+      })
+      .catch((err) => console.error("artifacts.geojson error", err));
+
+    // --- Загрузка археологического маршрута ---
+    fetch("{% url 'routes_geojson' %}")
+      .then((r) => r.json())
+      .then((data) => {
+        routesLayer = L.geoJSON(data, {
+          style: () => ({
+            color: "#228b57",
+            weight: 4,
+            opacity: 0.9
+          }),
+          onEachFeature: (feature, layer) => {
+            const name =
+              feature.properties && feature.properties.name
+                ? feature.properties.name
+                : "{% trans 'Route' %}";
+            const desc =
+              feature.properties && feature.properties.description
+                ? feature.properties.description
+                : "";
+
+            layer.bindPopup(
+              `<div class="popup">
+                 <div class="popup-title">${name}</div>
+                 <div class="popup-meta">${desc}</div>
+               </div>`
+            );
+          }
+        });
+
+        applyMapMode();  // чтобы режим archaeological сразу включал слой, если выбран
+      })
+      .catch((err) => {
+        console.warn("routes_geojson error", err);
+      });
+
+    // --- Подготовка списка мест для маршрутизации (From/To) ---
+    function populateRoutingPlaces(data) {
+      if (!data || !data.features) return;
+
+      placesForRouting = [];
+      data.features.forEach((feature, index) => {
+        const props = feature.properties || {};
+        const geom  = feature.geometry || {};
+        if (!geom || geom.type !== "Point" || !Array.isArray(geom.coordinates)) {
+          return;
+        }
+        const [lon, lat] = geom.coordinates;
+        if (lon == null || lat == null) return;
+
+        const name = props.name || props.title || `Place ${index + 1}`;
+
+        const idx = placesForRouting.length;
+        placesForRouting.push({ index: idx, name, lon, lat });
+
+        const optFrom = document.createElement("option");
+        optFrom.value = String(idx);
+        optFrom.textContent = name;
+        fromSelect.appendChild(optFrom);
+
+        const optTo = document.createElement("option");
+        optTo.value = String(idx);
+        optTo.textContent = name;
+        toSelect.appendChild(optTo);
+      });
+
+      if (placesForRouting.length >= 2) {
+        buildRouteBtn.disabled = false;
+      }
+    }
+
+    // --- Применение режима карты ---
+    function applyMapMode() {
+      // всегда показываем точки и артефакты
+      if (placesLayer && !map.hasLayer(placesLayer)) {
+        placesLayer.addTo(map);
+      }
+      if (artifactsLayer && !map.hasLayer(artifactsLayer)) {
+        artifactsLayer.addTo(map);
+      }
+
+      // археологический маршрут
+      if (routesLayer) {
+        if (currentMode === "archaeological") {
+          if (!map.hasLayer(routesLayer)) {
+            routesLayer.addTo(map);
+          }
+          routesLayer.bringToFront();
+        } else if (map.hasLayer(routesLayer)) {
+          map.removeLayer(routesLayer);
+        }
+      }
+
+      // маршрут OSRM
+      if (routeOsrmLayer) {
+        if (currentMode === "driving" || currentMode === "walking") {
+          if (!map.hasLayer(routeOsrmLayer)) {
+            routeOsrmLayer.addTo(map);
+          }
+          routeOsrmLayer.bringToFront();
+        } else if (map.hasLayer(routeOsrmLayer)) {
+          map.removeLayer(routeOsrmLayer);
+        }
+      }
+
+      // панель маршрутизации
+      if (routingPanel) {
+        if (currentMode === "driving" || currentMode === "walking") {
+          routingPanel.style.display = "block";
+        } else {
+          routingPanel.style.display = "none";
+        }
+      }
+
+      fitToAllBounds();
+    }
+
+    // --- Построение OSRM-маршрута ---
+    if (buildRouteBtn) {
+      buildRouteBtn.addEventListener("click", () => {
+        if (placesForRouting.length < 2) return;
+
+        const fromVal = fromSelect.value;
+        const toVal   = toSelect.value;
+
+        if (!fromVal || !toVal) {
+          alert("{% trans 'Please select both start and end places.' %}");
+          return;
+        }
+        if (fromVal === toVal) {
+          alert("{% trans 'Start and end places must be different.' %}");
+          return;
+        }
+
+        const fromIdx = parseInt(fromVal, 10);
+        const toIdx   = parseInt(toVal, 10);
+
+        const fromPlace = placesForRouting[fromIdx];
+        const toPlace   = placesForRouting[toIdx];
+
+        if (!fromPlace || !toPlace) return;
+
+        // если режим не driving / walking — принудительно driving
+        if (currentMode !== "driving" && currentMode !== "walking") {
+          currentMode = "driving";
+          const drivingRadio = document.querySelector(
+            'input[name="map-mode"][value="driving"]'
+          );
+          if (drivingRadio) drivingRadio.checked = true;
+          applyMapMode();
+        }
+
+        const profile = currentMode === "walking" ? "foot" : "driving";
+
+        const osrmUrl =
+          `https://router.project-osrm.org/route/v1/${profile}/` +
+          `${fromPlace.lon},${fromPlace.lat};${toPlace.lon},${toPlace.lat}` +
+          `?overview=full&geometries=geojson`;
+
+        // показываем карточку и ставим статус "Calculating…"
+        if (routeInfoCard) {
+          routeInfoCard.style.display = "block";
+          routeDistanceEl.textContent = "…";
+          routeTimeEl.textContent     = "{% trans 'Calculating…' %}";
+          routeModeLabel.textContent  = "";
+        }
+
+        fetch(osrmUrl)
+          .then((r) => r.json())
+          .then((data) => {
+            if (!data.routes || !data.routes.length) {
+              if (routeInfoCard) {
+                routeDistanceEl.textContent = "–";
+                routeTimeEl.textContent     = "{% trans 'No route found.' %}";
+                routeModeLabel.textContent  = "";
+              }
+              return;
+            }
+
+            const route = data.routes[0];
+
+            const geojson = {
+              type: "Feature",
+              geometry: route.geometry,
+              properties: {}
+            };
+
+            if (routeOsrmLayer) {
+              map.removeLayer(routeOsrmLayer);
+            }
+
+            routeOsrmLayer = L.geoJSON(geojson, {
+              style: {
+                color: "#0066ff",
+                weight: 5,
+                opacity: 0.95
+              }
+            }).addTo(map);
+
+            routeOsrmLayer.bringToFront();
+
+            const distanceKm = route.distance / 1000;
+
+            // время из OSRM (для машины)
+            const drivingMinutes = Math.round(route.duration / 60);
+
+            // для walking считаем сами (4 км/ч), чтобы отличалось
+            let durationMin;
+            let modeText;
+            if (currentMode === "walking") {
+              const walkingSpeedKmh = 4; // можешь поменять
+              durationMin = Math.round((distanceKm / walkingSpeedKmh) * 60);
+              modeText = "{% trans 'Mode: walking (approx. 4 km/h)' %}";
+            } else {
+              durationMin = drivingMinutes;
+              modeText = "{% trans 'Mode: driving (OSRM car profile)' %}";
+            }
+
+            // форматируем красиво: X h Y min
+            const hours   = Math.floor(durationMin / 60);
+            const minutes = durationMin % 60;
+            const timeStr =
+              (hours > 0 ? `${hours} h ` : "") + `${minutes} min`;
+
+            if (routeInfoCard) {
+              routeDistanceEl.textContent = distanceKm.toFixed(1) + " km";
+              routeTimeEl.textContent     = timeStr;
+              routeModeLabel.textContent  = modeText;
+            }
+
+            if (routeOsrmLayer.getBounds) {
+              map.fitBounds(routeOsrmLayer.getBounds().pad(0.2));
+            }
+          })
+          .catch((err) => {
+            console.error("OSRM route error:", err);
+            if (routeInfoCard) {
+              routeDistanceEl.textContent = "–";
+              routeTimeEl.textContent     = "{% trans 'Error while building the route.' %}";
+              routeModeLabel.textContent  = "";
+            }
+          });
+      });
+    }
+
+    // --- Быстрый поиск по названию ---
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      if (!query) return;
+
+      let foundLayer = null;
+
+      function checkLayer(layer) {
+        if (foundLayer) return;
+        if (layer.feature && layer.feature.properties) {
+          const title = (layer.feature.properties.title ||
+                        layer.feature.properties.name ||
+                        "").toLowerCase();
+          if (title.includes(query)) {
+            foundLayer = layer;
+          }
+        }
+      }
+
+      if (artifactsLayer) {
+        artifactsLayer.eachLayer(checkLayer);
+      }
+      if (placesLayer) {
+        placesLayer.eachLayer(checkLayer);
+      }
+
+      if (foundLayer) {
+        const b = foundLayer.getBounds
+          ? foundLayer.getBounds()
+          : L.latLngBounds([foundLayer.getLatLng()]);
+        map.fitBounds(b.pad(1.2));
+        foundLayer.openPopup();
+      }
+    });
+
+    // --- Подгонка карты ---
+    function fitToAllBounds() {
+      const group = L.featureGroup([]);
+
+      if (placesLayer && placesLayer.getLayers().length) {
+        group.addLayer(placesLayer);
+      }
+      if (artifactsLayer && artifactsLayer.getLayers().length) {
+        group.addLayer(artifactsLayer);
+      }
+      if (routesLayer && map.hasLayer(routesLayer) && routesLayer.getLayers().length) {
+        group.addLayer(routesLayer);
+      }
+      if (routeOsrmLayer && map.hasLayer(routeOsrmLayer) && routeOsrmLayer.getLayers().length) {
+        group.addLayer(routeOsrmLayer);
+      }
+
+      if (group.getLayers().length) {
+        map.fitBounds(group.getBounds().pad(0.15));
+      }
+    }
+  </script>
+{% endblock %}
